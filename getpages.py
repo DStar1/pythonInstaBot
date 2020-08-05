@@ -33,20 +33,22 @@ class Getpages:
 	def __init__(self, driver, user):
 		self.driver = driver
 		self.driver.get(f'https://www.instagram.com/{user}')
-		self.hrefs = []
-		self.followTags = []
+		self.following = []
+		self.followingTags = []
+		self.followers = []
+		self.followersTags = []
 		self.user = user
-	def get_num_flw(self, flag):
+	def get_num_flw(self, flag, user):
 			if flag == "followers":
 					# Followers
-					flw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, \'/{self.user}/followers/\')]")))
+					flw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, \'/{user}/followers/\')]")))
 					# flw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#react-root > section > main')))
 					sflw = b(flw.get_attribute('innerHTML'), 'html.parser')
 					followers = sflw.findAll('span', {'class':'g47SY'})
 					f = followers[0].getText().replace(',', '')
 			elif flag == "following":
 					# Following
-					flw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, \'/{self.user}/following/\')]")))
+					flw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, \'/{user}/following/\')]")))
 					sflw = b(flw.get_attribute('innerHTML'), 'html.parser')
 					followers = sflw.findAll('span', {'class':'g47SY'})
 					f = followers[0].getText().replace(',', '')
@@ -63,7 +65,7 @@ class Getpages:
 		self.driver.get(f'https://www.instagram.com/{self.user}')
 		time.sleep(2)
 		followersOrFollowing = "followers"
-		numFollow = self.get_num_flw(followersOrFollowing)
+		numFollow = self.get_num_flw(followersOrFollowing, self.user)
 		# Followers
 		flw_btn = WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, \'/{self.user}/followers/\')]")))
 		flw_btn.click()
@@ -100,17 +102,17 @@ class Getpages:
 				if 'div' in hlink:
 					print('div found not adding to list')
 				else:
-					self.hrefs.append(hlink)
-					self.followTags.append(followTag)
+					self.followers.append(hlink)
+					self.followersTags.append(followTag)
 			except:
 				pass
-		return self.hrefs, self.followTags
+		return self.followers, self.followersTags
 
 	def get_following(self):
 		self.driver.get(f'https://www.instagram.com/{self.user}')
 		time.sleep(2)
 		followersOrFollowing = "following"
-		numFollow = self.get_num_flw(followersOrFollowing)
+		numFollow = self.get_num_flw(followersOrFollowing, self.user)
 		# Following
 		flw_btn = WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, \'/{self.user}/following/\')]")))
 		flw_btn.click()
@@ -147,11 +149,11 @@ class Getpages:
 				if 'div' in hlink:
 					print('div found not adding to list')
 				else:
-					self.hrefs.append(hlink)
-					self.followTags.append(followTag)
+					self.following.append(hlink)
+					self.followingTags.append(followTag)
 			except:
 				pass
-		return self.hrefs, self.followTags		
+		return self.following, self.followingTags		
 
 	def is_public(self):
 		try:
