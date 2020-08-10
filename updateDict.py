@@ -15,15 +15,19 @@ class UpdateDict():
 		# Clearn I still following
 		for href in self.d.keys():
 			self.d[href]["i_still_following"] = False
+			# self.d[href]["refollowed"] = 1 # GET RID OF THIS AFTER FIRST RUN (Needed to add the parameter in dict)
 		# Add new following and update i still following
 		for href in following:
 			if href not in self.d:
 				#working on this!!!!!!!!!!!!!!!!!!!!!
-				self.d[href] = {"date_i_followed":self.date,"date_they_followed":"","date_unfollow":"","likedPhotos":[],"they_still_following":False, "date_they_unfollowed":"","i_still_following":True}
+				self.d[href] = {"date_i_followed":self.date,"date_they_followed":"","date_unfollow":"","likedPhotos":[],"they_still_following":False, "date_they_unfollowed":"","i_still_following":True, "refollowed":1}
 			else:
 				self.d[href]["i_still_following"] = True
 				# If I refollow someone
-				self.d[href]["date_unfollow"] = ""
+				if self.d[href]["date_unfollow"] != "" or self.d[href]["date_they_unfollowed"] != "":
+					self.d[href]["date_unfollow"] = ""
+					self.d[href]["date_they_unfollowed"] = ""
+					self.d[href]["refollowed"] += 1
 		# Updates all in dict to not following, so only people currently following show (below)
 		for href in self.d.keys():
 			self.d[href]["they_still_following"] = False
@@ -43,7 +47,7 @@ class UpdateDict():
 		# INSTEAD: if "date_they_followed" == "" and "date_i_unfollowed" == "" and today is far enouph from that day, unfollow and set "date_i_unfollowed"
 		# self.unfollow = [x for x in d if d[x]["date_they_followed"] == ""]
 		self.logUpdates()
-		self.saveJson()
+		return self.saveJson()
 
 	def logUpdates(self):
 		with open('curiawesityFollowing.json') as f:
@@ -61,7 +65,11 @@ class UpdateDict():
 	def unfollow(self, href):
 		self.d[href]["date_unfollow"] = self.date
 		self.d[href]["i_still_following"] = False
-		self.saveJson()
+		return self.saveJson()
+
+	def like(self, href, photo):
+		self.d[href]["likedPhotos"].append(photo)
+		return self.saveJson()
 
 	# def follow(self, href):
 	# 	self.d[href]["date_i_followed"] = self.date
@@ -70,8 +78,11 @@ class UpdateDict():
 
 	def saveJson(self):	
 		# Save file
-		with open('curiawesityFollowing.json', 'w') as outfile:
-			json.dump(self.d, outfile)
-		
+		try:
+			with open('curiawesityFollowing.json', 'w') as outfile:
+				json.dump(self.d, outfile)
+			return 1
+		except:
+			return 0
 		# No need. Dict preserves oder from oldest I followed to newest.
 		# self.unfollow = sorted(self.d.items(), key=lambda x:x["date_i_followed"], reverse=False)

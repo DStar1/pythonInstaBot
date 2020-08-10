@@ -5,6 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup as b
 import time
 import sys
+import datetime
+from dateutil.parser import parse
 
 # update_progress() : Displays or updates a console progress bar
 ## Accepts a float between 0 and 1. Any int will be converted to a float.
@@ -38,6 +40,7 @@ class Getpages:
 		self.followers = []
 		self.followersTags = []
 		self.user = user
+		self.date = datetime.date.today().isoformat()
 	def get_num_flw(self, flag, user):
 			if flag == "followers":
 					# Followers
@@ -171,11 +174,25 @@ class Getpages:
 		h = b(html, 'html.parser')
 		href = h.a['href']
 		self.driver.get('https://www.instagram.com' + href)
-		# Harrison corrected elem location and added a check to make sure we dont unlike a photo
-		like_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#react-root > section > main > div > div.ltEKP > article > div > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg')))
-		if (like_btn.get_attribute("aria-label") == "Like"):
-			like_btn.click()
-			return href
+		# Get date
+		date_obj = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/div[1]/article/div/div[3]/div[2]/a/time')))
+		date = date_obj.get_attribute("datetime")
+		# pic_date = datetime.strptime(date[:10], '%Y-%m-%d')
+		pic_date = parse(date)
+		now = datetime.datetime.now(pic_date.tzinfo)
+		# print(f"{pic_date}\n{now}\n{now - datetime.timedelta(3)}\n\n")
+		daysPadding = 10
+		if pic_date >= now - datetime.timedelta(daysPadding):
+			# Harrison corrected elem location and added a check to make sure we dont unlike a photo
+			like_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#react-root > section > main > div > div.ltEKP > article > div > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg')))
+			if (like_btn.get_attribute("aria-label") == "Like"):
+				like_btn.click()
+				print("Liked succefully")
+				return href
+			else:
+				print("Already liked?")
+		else:
+			print(f"Pic older than {daysPadding} days")
 
 	# Newly added by me
 	def follow_page(self):
@@ -193,8 +210,16 @@ class Getpages:
 		time.sleep(1)
 
 	def unfollow_page(self):
-		unfollow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
-		unfollow.click()
-		unfollow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.-Cab_')))
-		unfollow.click()
+		try:
+			unfollow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
+		except:
+			unfollow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/button/div/span')))
 		time.sleep(1)
+		if unfollow.get_attribute("aria-label") == "Following":
+			unfollow.click()																		   
+			unfollow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.-Cab_')))
+			if unfollow.text == "Unfollow":
+				unfollow.click()
+				time.sleep(1)
+				return 1
+		return 0
