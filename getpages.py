@@ -175,7 +175,7 @@ class Getpages:
 		href = h.a['href']
 		self.driver.get('https://www.instagram.com' + href)
 		# Get date
-		date_obj = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/div[1]/article/div/div[3]/div[2]/a/time')))
+		date_obj = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/div[1]/article/div[3]/div[2]/a/time')))#//*[@id="react-root"]/section/main/div/div[1]/article/div[3]/div[2]/a/time
 		date = date_obj.get_attribute("datetime")
 		# pic_date = datetime.strptime(date[:10], '%Y-%m-%d')
 		pic_date = parse(date)
@@ -184,7 +184,7 @@ class Getpages:
 		daysPadding = 10
 		if pic_date >= now - datetime.timedelta(daysPadding):
 			# Harrison corrected elem location and added a check to make sure we dont unlike a photo
-			like_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#react-root > section > main > div > div.ltEKP > article > div > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg')))
+			like_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg')))#'#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg > path////*[@id="react-root"]/section/main/div/div/article/div[3]/section[1]/span[1]/button/div/span/svg/path
 			if (like_btn.get_attribute("aria-label") == "Like"):
 				like_btn.click()
 				print("Liked succefully")

@@ -14,7 +14,7 @@ import googleInt
 import updateDict
 import random
 from dateutil.parser import parse
-import bots
+from bots import followersFollowing, unfollow_bot, like_bot
 import json
 # ############################ IMPORTANT!!!!!!!! ##########
 # config.json = {
@@ -291,7 +291,7 @@ if __name__ == '__main__':
 			print(f"Unfollowing {max_follows}")
 			unfollow_bot(gDict, gp, max_follows)
 		elif name == "like":
-			print(f"Liking {max_like}")
+			print(f"Liking {max_likes}")
 			like_bot(gDict, gp, max_likes)
 		elif name == "follow":
 			print("No follow function")
