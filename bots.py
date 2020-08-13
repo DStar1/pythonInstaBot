@@ -93,7 +93,7 @@ def like_bot(gDict, gp, max_likes):
 		# for key, value in gDict.d.items():
 		key, value = random.choice(list(gDict.d.items()))
 		# timeBefore = time.time()
-		if value["i_still_following"] and len(value["likedPhotos"]) < pics_len:
+		if value["i_still_following"]:# and len(value["likedPhotos"]) < pics_len:
 			if timeout_input("Press enter to stop: ") == (-1, ''):
 				gp.driver.get('https://www.instagram.com' + key)
 				if gp.is_public():
@@ -214,3 +214,11 @@ def run_old__bot(refs, driver, gp):
 					
 				else:
 					time.sleep(3600)
+
+def checkRefollow(gDict):
+	refollow = 1
+	for key, value in gDict.d.items():
+		if value["refollowed"] > 1:
+			print(f"{key}: {value}")
+			refollow+=1
+	print(f"\nTotal refollowed: {refollow}\n")

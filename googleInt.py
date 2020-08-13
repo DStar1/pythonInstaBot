@@ -18,13 +18,18 @@ import json
 class Google():
 	def __init__(self):
 		self.gc = gspread.service_account(filename= 'sheetsData.json')
-		self.sheetFollowing = self.gc.open('crawler').worksheet(f"curiawesityFollowing")
-		self.sheetFollowers = self.gc.open('crawler').worksheet(f"curiawesityFollowers")
+		self.sheetFollowing = None
+		self.sheetFollowers = None
+		self.sheetDict = None
 		self.date = datetime.date.today().isoformat()
 		self.unfollow = {}
 		# self.d = {}
 		with open('curiawesityFollowing.json') as f:
 			self.d = json.load(f)
+
+	def initSheets(self):
+		self.sheetFollowing = self.gc.open('crawler').worksheet(f"curiawesityFollowing")
+		self.sheetFollowers = self.gc.open('crawler').worksheet(f"curiawesityFollowers")
 
 	# OLD USE IF FIRST TIME RUNNING (GRABS DATA FROM GOOGLE FOR ALL PAST)
 	def getFollowingFollowersFromGoogle(self):
@@ -65,3 +70,22 @@ class Google():
 		# sheet.append_rows(followers)
 		# sheet = self.gc.open('crawler').worksheet(f"{user}Followers")
 		# sheet.append_rows(followers)
+
+	def saveDictToGoogle(self, gDict):
+		self.sheetDict = gc.open('crawler').worksheet(f"dict")
+		# sheetDict.clear()
+		d = []
+		# d.append()
+		i = 0
+		for key, value in gDict.d.items():
+			if i == 0:
+				l = ["href"]
+				ll = list(value.keys())
+				l.extend(ll + [self.date])
+			else:
+				l = [key]
+				ll = list(value.values())
+				l.extend(ll[:3] + [str(ll[3])] + ll[4:])
+			d.append(l)
+			i+=1
+		self.sheetDict.update('A1', d)
