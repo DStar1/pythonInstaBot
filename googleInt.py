@@ -21,6 +21,7 @@ class Google():
 		self.sheetFollowing = None
 		self.sheetFollowers = None
 		self.sheetDict = None
+		self.toFollowSheet = None
 		self.date = datetime.date.today().isoformat()
 		self.unfollow = {}
 		# self.d = {}
@@ -33,6 +34,7 @@ class Google():
 
 	# OLD USE IF FIRST TIME RUNNING (GRABS DATA FROM GOOGLE FOR ALL PAST)
 	def getFollowingFollowersFromGoogle(self):
+		self.initSheets()
 		# gets list of rows from google
 		v = self.sheetFollowing.get_all_values()
 		d = {}
@@ -57,6 +59,7 @@ class Google():
 
 	# New needs testing
 	def saveMyFollowToGoogle(self, followers_save, followersTags_save,following_save, followingTags_save):
+		self.initSheets()
 		following = []
 		for i, follower in enumerate(following_save):
 			following.append([self.date,follower,followingTags_save[i]])
@@ -89,3 +92,7 @@ class Google():
 			d.append(l)
 			i+=1
 		self.sheetDict.update('A1', d)
+	
+	def toFollowGet(self):
+		self.toFollowSheet = self.gc.open('crawler').worksheet(f"kurzgesagtFollowing")
+		return self.toFollowSheet.col_values(1)

@@ -80,6 +80,23 @@ def unfollow_bot(gDict, gp, max_follows):
 						# time.sleep(3600)
 			else:
 				print(f"Followed less than {daysPadding} days ago...")
+# def like(gp):
+# 	if gp.is_public():
+# 		# key[1:-1] because "/user/" needs to be "user"
+# 		# num_flw = gp.get_num_flw("followers", key[1:-1])
+# 		time.sleep(2)
+# 		print('current likes: ' + str(L))
+# 		print(f'{key}: attempting to like')
+# 		time.sleep(random.randint(5,10))
+# 		try:
+# 			photo = gp.like_post()
+# 			if photo:
+# 				print(f'{key}: liked successfully')
+# 				# Not yet implimented
+# 				gDict.like(key,photo)
+# 				L += 1
+# 		except:
+# 			print(f'{key}: could not like')
 
 def like_bot(gDict, gp, max_likes):
 	print('LIKING')
@@ -98,7 +115,7 @@ def like_bot(gDict, gp, max_likes):
 				gp.driver.get('https://www.instagram.com' + key)
 				if gp.is_public():
 					# key[1:-1] because "/user/" needs to be "user"
-					num_flw = gp.get_num_flw("followers", key[1:-1])
+					# num_flw = gp.get_num_flw("followers", key[1:-1])
 					time.sleep(2)
 					print('current likes: ' + str(L))
 					print(f'{key}: attempting to like')
@@ -116,60 +133,61 @@ def like_bot(gDict, gp, max_likes):
 				return
 		pics_len += 1
 	return
-
-def run_bot(refs, driver, gp):
-	#global href dict of everyone I followed and who follows me back
-	# usersDictList = {
-	# 	"href": "/test/",
-	# 	"info": {"href": "/test/","date_i_followed":"01-01-2020","date_they_followed":None,"date_unfollow":"01-07-2020","liked_photos":["id's"]}
-	# }
+#global href dict of everyone I followed and who follows me back
+# usersDictList = {
+# 	"href": "/test/",
+# 	"info": {"href": "/test/","date_i_followed":"01-01-2020","date_they_followed":None,"date_unfollow":"01-07-2020","liked_photos":["id's"]}
+# }
+def follow_bot(goog, gDict, gp, max_follows = 40):
 	# List of people to follow from other channels
-	listToFollow = ["/test1/", "/test2/"]
-	# load/read json
-	with open('curiawesityFollowing.json') as f:
-		d = json.load(f)
-	print(len(refs))
+	listToFollow = goog.toFollowGet()#= ["/test1/", "/test2/"]
+	with open('kurzgesagtFollowers.csv') as f:
+		listToFollow = f.readlines()
+	print(len(listToFollow))
 	print('accounts targeted')
 	t = time.time()
 	#how many pages we likes / followed
 	L = 0
 	F = 0
-	for r in listToFollow:
-		driver.get('https://www.instagram.com' + r)
-		time.sleep(2)
-		if gp.get_num_flw("followers", r) < 3000:
-			if gp.is_public():
-				print('public account')
-				print('current likes: ' + str(L))
-				if L < max_likes:
+	for hrefL in listToFollow[1:]:
+		# href = hrefL.split(':')[0][1:-1]# google
+		href = hrefL.split(',')[1]# json
+		if href not in gDict.d:
+			gp.driver.get('https://www.instagram.com' + href)
+			time.sleep(2)
+			if timeout_input("Press enter to stop: ") == (-1, ''):#gp.get_num_flw("followers", href[1:-1]) < 5000:
+				print('current follows: ' + str(F))
+				if F < max_follows:
+					time.sleep(random.randint(5,10))
 					try:
-						gp.like_post()
-						L += 1
-						print("POST LIKED")
+						if gp.follow_page(href):
+							print(f"{href}: Followed succesfully.")
+							F += 1
+							if gDict.followed(href):
+								print(f"{href}: Saved new following.")
+							else:
+								print(f"{href}: ERROR saving new following.")
+							# Like post here!
+						else:
+							print(f"{href}: ERROR saving new following.")
 					except:
-						print('could not like..lets follow instead')
-						# try:
-						# 	gp.follow_page()
-						# 	print('page followed successfully')
-						# 	F += 1
-						# except:
-						# 	print('could not follow')
-				else:
-					time.sleep(3600) # time.sleep(3600 - (time.time() - t)) -> t= time.time()
+						print(f"{href}: ERROR saving new following.")
 			else:
-				print('account is private')
-			print('current follows: ' + str(F))
-			if F < max_follows:
-				time.sleep(2)
-				try:
-					gp.follow_page()
-					print('page followed successfully')
-					F += 1
-				except:
-					print('could not follow')
-				
-			else:
-				time.sleep(3600)
+				return
+				# else:
+				# 	time.sleep(3600)
+# def follow(goog, gDict, gp):
+# 	toFollow = goog.toFollowGet()
+# 	for href in toFollow:
+# 		if href not in gDict.d:
+# 			if gp.follow(href) == True:
+# 				print(f"{href}: Followed succesfully.")
+# 				if gDict.followed(href):
+# 					print(f"{href}: Saved new following.")
+# 				else:
+# 					print(f"{href}: ERROR saving new following.")
+# 			else:
+# 				print(f"{href}: ERROR could not follow...")
 
 def run_old__bot(refs, driver, gp):
 	print(len(refs))

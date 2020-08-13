@@ -14,7 +14,7 @@ import googleInt
 import updateDict
 import random
 from dateutil.parser import parse
-from bots import followersFollowing, unfollow_bot, like_bot, checkRefollow
+from bots import followersFollowing, unfollow_bot, like_bot, checkRefollow, follow_bot
 import json
 # ############################ IMPORTANT!!!!!!!! ##########
 # config.json = {
@@ -55,7 +55,7 @@ def set_driver():
 	# driver = webdriver.Chrome('chromedriver', chrome_options=options)
 	return driver
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 # global driver
 print('running script..')
 driver = set_driver()
@@ -93,6 +93,7 @@ while name != "done":
 		like_bot(gDict, gp, max_likes)
 	elif name == "follow":
 		print("No follow function")
+		follow_bot(goog, gDict, gp)#, max_follows = 40)
 	elif name == "update":
 		followers, followersTag, following, followingTag = followersFollowing(gp, user)
 		gDict.updateFollowingFollowersDict(followers,following)
@@ -108,7 +109,7 @@ while name != "done":
 			g = googleInt.Google()
 		g.saveMyFollowToGoogle(followers, followersTag,following, followingTag)
 		# print("SAVED FOLLOWERS AND FOLLOWING TO GOOGLE")
-	elif name == "update"
+
 driver.quit()
 
 

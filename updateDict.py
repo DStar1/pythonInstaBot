@@ -70,6 +70,10 @@ class UpdateDict():
 	def like(self, href, photo):
 		self.d[href]["likedPhotos"].append(photo)
 		return self.saveJson()
+	
+	def followed(self, href):
+		self.d[href] = {"date_i_followed":self.date,"date_they_followed":"","date_unfollow":"","likedPhotos":[],"they_still_following":False, "date_they_unfollowed":"","i_still_following":True, "refollowed":1}
+		return self.saveJson()
 
 	# def follow(self, href):
 	# 	self.d[href]["date_i_followed"] = self.date
