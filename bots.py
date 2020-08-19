@@ -49,37 +49,40 @@ def unfollow_bot(gDict, gp, max_follows):
 	now = datetime.datetime.now()
 	for key, value in gDict.d.items():
 		if value["they_still_following"] == False and value["i_still_following"] == True:
-			# Todo: Make sure not rescenct follow(past week)
-			follow_date = parse(value["date_i_followed"])
-			print(f"\n{key}:\nFollow date: {value['date_i_followed']}")
-			if now - datetime.timedelta(daysPadding) > follow_date:
-				gp.driver.get('https://www.instagram.com' + key)
-				# key[1:-1] because "/user/" needs to be "user"
-				num_flw = gp.get_num_flw("followers", key[1:-1])
-				max_followers = 3000
-				if num_flw < max_followers:
-					print(f"Num flws(less than {max_followers}): {num_flw}")
-					time.sleep(2)
-					print(f'current unfollows: {str(F)} of {max_follows}')
-					if F < max_follows:
-						time.sleep(random.randint(5,10))
-						try:
-							if gp.unfollow_page():
-								print(f'{key}: unfollowed successfully')
-								if gDict.unfollow(key):
-									print("Updated dict succesfully")
+			if timeout_input("Press enter to stop: ") == (-1, ''):
+				# Todo: Make sure not rescenct follow(past week)
+				follow_date = parse(value["date_i_followed"])
+				print(f"\n{key}:\nFollow date: {value['date_i_followed']}")
+				if now - datetime.timedelta(daysPadding) > follow_date:
+					gp.driver.get('https://www.instagram.com' + key)
+					# key[1:-1] because "/user/" needs to be "user"
+					num_flw = gp.get_num_flw("followers", key[1:-1])
+					max_followers = 3000
+					if num_flw < max_followers:
+						print(f"Num flws(less than {max_followers}): {num_flw}")
+						time.sleep(2)
+						print(f'current unfollows: {str(F)} of {max_follows}')
+						if F < max_follows:
+							time.sleep(random.randint(5,10))
+							try:
+								if gp.unfollow_page():
+									print(f'{key}: unfollowed successfully')
+									if gDict.unfollow(key):
+										print("Updated dict succesfully")
+									else:
+										print("Updated dict error")
+									F += 1
 								else:
-									print("Updated dict error")
-								F += 1
-							else:
-								print(f'Could not unfollow(problem finding selenium elements)')
-						except:
-							print(f'{key}: could not unfollow')
-					else:
-						return
-						# time.sleep(3600)
+									print(f'Could not unfollow(problem finding selenium elements)')
+							except:
+								print(f'{key}: could not unfollow')
+						else:
+							return
+							# time.sleep(3600)
+				else:
+					print(f"Followed less than {daysPadding} days ago...")
 			else:
-				print(f"Followed less than {daysPadding} days ago...")
+				return
 # def like(gp):
 # 	if gp.is_public():
 # 		# key[1:-1] because "/user/" needs to be "user"
@@ -160,18 +163,18 @@ def follow_bot(goog, gDict, gp, max_follows = 40):
 				if F < max_follows:
 					time.sleep(random.randint(5,10))
 					try:
-						if gp.follow_page(href):
+						if gp.follow_page(href) == 1:
 							print(f"{href}: Followed succesfully.")
 							F += 1
-							if gDict.followed(href):
+							if gDict.followed(href) == 1:
 								print(f"{href}: Saved new following.")
 							else:
 								print(f"{href}: ERROR saving new following.")
 							# Like post here!
 						else:
-							print(f"{href}: ERROR saving new following.")
+							print(f"{href}: ERROR following page.")
 					except:
-						print(f"{href}: ERROR saving new following.")
+						print(f"{href}: ERROR following.")
 			else:
 				return
 				# else:
@@ -240,3 +243,14 @@ def checkRefollow(gDict):
 			print(f"{key}: {value}")
 			refollow+=1
 	print(f"\nTotal refollowed: {refollow}\n")
+
+def followUnfollowLikeHour(gDict, gp, max_follows, max_likes):
+	i = 0
+	while True:
+		print(f"Ran {i} times:\n")
+		i+=1
+		unfollow_bot(gDict, gp, max_follows)
+		follow_bot(goog, gDict, gp)
+		like_bot(gDict, gp, max_likes)
+		if timeout_input("MAIN LOOP: Press enter to stop: ",3600) != (-1, ''):
+			break

@@ -75,7 +75,6 @@ class Google():
 		# sheet.append_rows(followers)
 
 	def saveDictToGoogle(self, gDict):
-		self.sheetDict = gc.open('crawler').worksheet(f"dict")
 		# sheetDict.clear()
 		d = []
 		# d.append()
@@ -91,6 +90,7 @@ class Google():
 				l.extend(ll[:3] + [str(ll[3])] + ll[4:])
 			d.append(l)
 			i+=1
+		self.sheetDict = self.gc.open('crawler').worksheet(f"dict")
 		self.sheetDict.update('A1', d)
 	
 	def toFollowGet(self):

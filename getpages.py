@@ -195,19 +195,24 @@ class Getpages:
 			print(f"Pic older than {daysPadding} days")
 
 	# Newly added by me
-	def follow_page(self):
+	def follow_page(self, href):
 		try:
-			# Following already
-			follow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
-			f_text = follow.get_attribute("aria-label")
+			# Public
+			follow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button')))#'//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
+			# f_text = follow.get_attribute("aria-label")	
+			f_text = follow.text
 		except:
-			follow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/span/span[1]/button')))
+			# Private
+			follow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/button')))#//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/span/span[1]/button')))
 			f_text = follow.text
 		if f_text.lower() == 'follow' or f_text.lower() == 'follow back':
 			follow.click()
+			print('followed')
+			time.sleep(1)
+			return 1
 		elif f_text.lower() == 'following':
 			print('already following')
-		time.sleep(1)
+		return 0
 
 	def unfollow_page(self):
 		try:

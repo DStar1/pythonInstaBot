@@ -14,7 +14,7 @@ import googleInt
 import updateDict
 import random
 from dateutil.parser import parse
-from bots import followersFollowing, unfollow_bot, like_bot, checkRefollow, follow_bot
+from bots import followersFollowing, unfollow_bot, like_bot, checkRefollow, follow_bot, followUnfollowLikeHour
 import json
 # ############################ IMPORTANT!!!!!!!! ##########
 # config.json = {
@@ -81,7 +81,7 @@ max_follows = 20#50
 g = None
 name = ""
 while name != "done":
-	name = input("Conitue?\nOPTIONS(like, unfollow, follow, checkRefollow, done): ")
+	name = input("Conitue?\nOPTIONS(like, unfollow, follow, checkRefollow, google, update, done): ")
 	if name == "done":
 		print("Exiting")
 		break
@@ -123,3 +123,23 @@ driver.quit()
 
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(json.dumps(doc))
+
+# import sys, select
+# def timeout_input(prompt, timeout=3, default=""):
+# 	print(prompt, end=': ', flush=True)
+# 	inputs, outputs, errors = select.select([sys.stdin], [], [], timeout)
+# 	print()
+# 	return (0, sys.stdin.readline().strip()) if inputs else (-1, default)
+
+# def followUnfollowLikeHour(gDict, gp, max_follows, max_likes):
+# 	i = 1
+# 	while True:
+# 		print(f"Ran {i} times:\n")
+# 		i+=1
+# 		unfollow_bot(gDict, gp, max_follows)
+# 		follow_bot(goog, gDict, gp)
+# 		like_bot(gDict, gp, max_likes, max_follows)
+# 		if timeout_input("MAIN LOOP: Press enter to stop: ",3600) != (-1, ''):
+# 			break
+
+print("done")
