@@ -8,8 +8,12 @@ class UpdateDict():
 		with open('curiawesityFollowing.json') as f:
 			self.d = json.load(f)
 
+	def setDate(self):
+		self.date = datetime.date.today().isoformat()
+
 	# Doesn't belong in Google Class
 	def updateFollowingFollowersDict(self, followers, following):
+		self.setDate()
 		# gets list of rows
 		# v = self.sheetFollowing.get_all_values()
 		# Clearn I still following
@@ -50,6 +54,7 @@ class UpdateDict():
 		return self.saveJson()
 
 	def logUpdates(self):
+		self.setDate()
 		with open('curiawesityFollowing.json') as f:
 			oldData = json.load(f)
 		with open("arrLogs.txt", "a+") as arrLogs:
@@ -57,21 +62,24 @@ class UpdateDict():
 			for key, value in self.d.items():
 				if key in oldData:
 					if oldData[key] != self.d[key]:
-						arrLogs.write(f"OLD:/n{oldData[key]}\nNEW:{self.d[key]}\n\n")
+						arrLogs.write(f"{key}:\nOLD:/n{oldData[key]}\nNEW:{self.d[key]}\n\n")
 				else:
 					arrLogs.write(f"{key} newly added!\n")
 			arrLogs.write("END\n\n")
 
 	def unfollow(self, href):
+		self.setDate()
 		self.d[href]["date_unfollow"] = self.date
 		self.d[href]["i_still_following"] = False
 		return self.saveJson()
 
 	def like(self, href, photo):
+		self.setDate()
 		self.d[href]["likedPhotos"].append(photo)
 		return self.saveJson()
 	
 	def followed(self, href):
+		self.setDate()
 		self.d[href] = {"date_i_followed":self.date,"date_they_followed":"","date_unfollow":"","likedPhotos":[],"they_still_following":False, "date_they_unfollowed":"","i_still_following":True, "refollowed":1}
 		return self.saveJson()
 
@@ -90,3 +98,18 @@ class UpdateDict():
 			return 0
 		# No need. Dict preserves oder from oldest I followed to newest.
 		# self.unfollow = sorted(self.d.items(), key=lambda x:x["date_i_followed"], reverse=False)
+
+
+
+# def logUpdates():
+# 	with open('curiawesityFollowing.json') as f:
+# 		d = json.load(f)
+# 	with open("arrLogs.txt", "a+") as arrLogs:
+# 		arrLogs.write(f"\nSTART:\n{self.date}\n")
+# 		for key, value in self.d.items():
+# 			if key in oldData:
+# 				if oldData[key] != self.d[key]:
+# 					arrLogs.write(f"OLD:/n{oldData[key]}\nNEW:{self.d[key]}\n\n")
+# 			else:
+# 				arrLogs.write(f"{key} newly added!\n")
+# 		arrLogs.write("END\n\n")

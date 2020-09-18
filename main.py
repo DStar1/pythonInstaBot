@@ -16,6 +16,7 @@ import random
 from dateutil.parser import parse
 from bots import followersFollowing, unfollow_bot, like_bot, checkRefollow, follow_bot, followUnfollowLikeHour
 import json
+from webdriver_manager.chrome import ChromeDriverManager
 # ############################ IMPORTANT!!!!!!!! ##########
 # config.json = {
 #     "username": "USERNAME",
@@ -34,10 +35,11 @@ user = c["user"]
 driver = 0
 refs = []
 max_likes = 20#350
-max_follows = 20#50
+max_follows = 50
 def set_driver():
 	# #With browser
-	driver = webdriver.Chrome('/Users/harrison/Downloads/chromedriver')
+	# driver = webdriver.Chrome('/Users/harrison/Downloads/chromedriver')
+	driver = webdriver.Chrome(ChromeDriverManager().install())
 	# #Without browser
 	# op = webdriver.ChromeOptions()
 	# op.add_argument('headless')
@@ -54,6 +56,10 @@ def set_driver():
 	# options.headless = True
 	# driver = webdriver.Chrome('chromedriver', chrome_options=options)
 	return driver
+
+# op = webdriver.ChromeOptions()
+# op.experimental_options[ "debuggerAddress" ] = "localhost:21"
+# driver = webdriver.Chrome(ChromeDriverManager().install(),options=op)
 
 # if __name__ == '__main__':
 # global driver

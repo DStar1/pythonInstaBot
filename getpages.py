@@ -41,6 +41,7 @@ class Getpages:
 		self.followersTags = []
 		self.user = user
 		self.date = datetime.date.today().isoformat()
+		self.stack_following = []
 	def get_num_flw(self, flag, user):
 			if flag == "followers":
 					# Followers
@@ -83,32 +84,37 @@ class Getpages:
 			self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight/{}'.format(str(11-h)), self.popup)
 			if h == 5:
 				break
-    	# num follow
-		currentFollow = 0
 		#for i in range(3):#70):#numFollow:
 		print("GETTING FOLLOWERS")
-		while currentFollow < numFollow:
-				time.sleep(2)
-				self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', self.popup)
-				# loads 36 at a time
-				currentFollow += 10
-				update_progress(currentFollow/numFollow)
-				#print(currentFollow/numFollow+"%")
-		self.popup = WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div[2]')))
-		b_popup = b(self.popup.get_attribute('innerHTML'), 'html.parser')
-		for p in b_popup.findAll('li', {'class': 'wo9IH'}):
-			try:
-				hlink = p.find_all('a')[0]['href']
-				followTag = p.find_all('button')[0].text
-				# followTags = [f for f in followTag]
-				print(hlink, ", ", followTag)
-				if 'div' in hlink:
-					print('div found not adding to list')
-				else:
-					self.followers.append(hlink)
-					self.followersTags.append(followTag)
-			except:
-				pass
+		self.followers = []
+		self.followersTags = []
+		while len(self.followers) < numFollow - 2:
+			currentFollow = int(len(self.followers) / 2)
+			self.followers = []
+			self.followersTags = []
+			while currentFollow < numFollow:
+					time.sleep(2)
+					self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', self.popup)
+					# loads 36 at a time
+					currentFollow += 10
+					update_progress(currentFollow/numFollow)
+					#print(currentFollow/numFollow+"%")
+			self.popup = WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div[2]')))
+			b_popup = b(self.popup.get_attribute('innerHTML'), 'html.parser')
+			for p in b_popup.findAll('li', {'class': 'wo9IH'}):
+				try:
+					hlink = p.find_all('a')[0]['href']
+					followTag = p.find_all('button')[0].text
+					# followTags = [f for f in followTag]
+					print(hlink, ", ", followTag)
+					if 'div' in hlink:
+						print('div found not adding to list')
+					else:
+						self.followers.append(hlink)
+						self.followersTags.append(followTag)
+				except:
+					pass
+			print("Finished one cycle")
 		return self.followers, self.followersTags
 
 	def get_following(self):
@@ -130,32 +136,37 @@ class Getpages:
 			self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight/{}'.format(str(11-h)), self.popup)
 			if h == 5:
 				break
-    	# num follow
-		currentFollow = 0
 		#for i in range(3):#70):#numFollow:
+		self.following = []
+		self.followingTags = []
 		print("GETTING FOLLOWERS")
-		while currentFollow < numFollow:
-				time.sleep(2)
-				self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', self.popup)
-				# loads 36 at a time
-				currentFollow += 10
-				update_progress(currentFollow/numFollow)
-				#print(currentFollow/numFollow+"%")
-		self.popup = WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div[2]')))
-		b_popup = b(self.popup.get_attribute('innerHTML'), 'html.parser')
-		for p in b_popup.findAll('li', {'class': 'wo9IH'}):
-			try:
-				hlink = p.find_all('a')[0]['href']
-				followTag = p.find_all('button')[0].text
-				# followTags = [f for f in followTag]
-				print(hlink, ", ", followTag)
-				if 'div' in hlink:
-					print('div found not adding to list')
-				else:
-					self.following.append(hlink)
-					self.followingTags.append(followTag)
-			except:
-				pass
+		while len(self.following) < numFollow - 2:
+			currentFollow = int(len(self.following) / 2)
+			self.following = []
+			self.followingTags = []
+			while currentFollow < numFollow:
+					time.sleep(2)
+					self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', self.popup)
+					# loads 36 at a time
+					currentFollow += 10
+					update_progress(currentFollow/numFollow)
+					#print(currentFollow/numFollow+"%")
+			self.popup = WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div[2]')))
+			b_popup = b(self.popup.get_attribute('innerHTML'), 'html.parser')
+			for p in b_popup.findAll('li', {'class': 'wo9IH'}):
+				try:
+					hlink = p.find_all('a')[0]['href']
+					followTag = p.find_all('button')[0].text
+					# followTags = [f for f in followTag]
+					print(hlink, ", ", followTag)
+					if 'div' in hlink:
+						print('div found not adding to list')
+					else:
+						self.following.append(hlink)
+						self.followingTags.append(followTag)
+				except:
+					pass
+			print("Finished one cycle")
 		return self.following, self.followingTags		
 
 	def is_public(self):
@@ -187,6 +198,11 @@ class Getpages:
 			like_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg')))#'#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span.fr66n > button > div > span > svg > path////*[@id="react-root"]/section/main/div/div/article/div[3]/section[1]/span[1]/button/div/span/svg/path
 			if (like_btn.get_attribute("aria-label") == "Like"):
 				like_btn.click()
+				time.sleep(2)
+				source = self.driver.page_source
+				if "Try Again Later" in source or "Report a Problem" in source:
+					print("Report a problem. Not allowing follow.")
+					return 0
 				print("Liked succefully")
 				return href
 			else:
@@ -196,17 +212,33 @@ class Getpages:
 
 	# Newly added by me
 	def follow_page(self, href):
+		f_text = ""
 		try:
-			# Public
-			follow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button')))#'//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
-			# f_text = follow.get_attribute("aria-label")	
+			follow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/span/span[1]/button')))#'//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
+			# f_text = follow.get_attribute("aria-label")
 			f_text = follow.text
 		except:
-			# Private
-			follow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/button')))#//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/span/span[1]/button')))
-			f_text = follow.text
+			print("Trying another elem...")
+			try:
+				# Public
+				follow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button')))#'//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
+				f_text = follow.text 																	
+			except:
+				print("Trying another elem...")		
+				try:
+					# Private
+					follow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/button')))#//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/span/span[1]/button')))
+					# f_text = follow.get_attribute("aria-label")
+					f_text = follow.text
+				except:
+					print("ERROR: cant locate selenium elem, to follow.")
 		if f_text.lower() == 'follow' or f_text.lower() == 'follow back':
 			follow.click()
+			time.sleep(2)
+			source = self.driver.page_source
+			if "Try Again Later" in source or "Report a Problem" in source:
+				print("Report a problem. Not allowing follow.")
+				return 0
 			print('followed')
 			time.sleep(1)
 			return 1
@@ -216,15 +248,28 @@ class Getpages:
 
 	def unfollow_page(self):
 		try:
-			unfollow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
+			unfollow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//span[contains(@aria-label, 'following')]")))#//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
+			# unfollow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/div[2]/div/span/span[1]/button/div/span')))#//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/div/span/span[1]/button/div/span')))
 		except:
-			unfollow = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/button/div/span')))
+			unfollow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[2]/button/div/span')))
 		time.sleep(1)
-		if unfollow.get_attribute("aria-label") == "Following":
-			unfollow.click()																		   
-			unfollow = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.-Cab_')))
-			if unfollow.text == "Unfollow":
-				unfollow.click()
-				time.sleep(1)
-				return 1
+		if unfollow.get_attribute("aria-label").lower() == "following":
+			unfollow.click()
+			time.sleep(1)
+		try:
+			unfollow_check = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[text()='Unfollow']")))
+		except:
+			unfollow_check = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.-Cab_')))
+		# except:
+		# 	unfollow_check = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div/div[3]/button[1]')))#/html/body/div[5]/div/div/div/div[3]/button[1]')))
+		time.sleep(1)
+		if unfollow_check.text.lower() == "unfollow":
+			unfollow_check.click()
+			time.sleep(2)
+			try:
+				check_unfollowed = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//header//button[text()='Follow']")))
+			except:
+				print("Couldn't find the refreshed follow button element")
+				return 0
+			return 1
 		return 0

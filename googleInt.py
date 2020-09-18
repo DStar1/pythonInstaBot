@@ -76,6 +76,8 @@ class Google():
 
 	def saveDictToGoogle(self, gDict):
 		# sheetDict.clear()
+		with open('curiawesityFollowing.json') as f:
+			self.d = json.load(f)
 		d = []
 		# d.append()
 		i = 0

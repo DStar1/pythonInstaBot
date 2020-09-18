@@ -162,19 +162,21 @@ def follow_bot(goog, gDict, gp, max_follows = 40):
 				print('current follows: ' + str(F))
 				if F < max_follows:
 					time.sleep(random.randint(5,10))
-					try:
-						if gp.follow_page(href) == 1:
-							print(f"{href}: Followed succesfully.")
-							F += 1
-							if gDict.followed(href) == 1:
-								print(f"{href}: Saved new following.")
-							else:
-								print(f"{href}: ERROR saving new following.")
-							# Like post here!
+					# try:
+					if gp.follow_page(href) == 1:
+						print(f"{href}: Followed succesfully.")
+						F += 1
+						if gDict.followed(href) == 1:
+							print(f"{href}: Saved new following.")
 						else:
-							print(f"{href}: ERROR following page.")
-					except:
-						print(f"{href}: ERROR following.")
+							print(f"{href}: ERROR saving new following.")
+						# Like post here!
+					else:
+						print(f"{href}: ERROR following page.")
+					# except:
+					# 	print(f"{href}: ERROR following.")
+				else:
+					return
 			else:
 				return
 				# else:
@@ -244,13 +246,70 @@ def checkRefollow(gDict):
 			refollow+=1
 	print(f"\nTotal refollowed: {refollow}\n")
 
+# def checkNew(gDict):
+# 	check = 1
+# 	for key, value in gDict.d.items():
+# 		if value["date_i_followed"] == "2020-08-19":
+# 			print(f"{key}: {value}")
+# 			check+=1
+# 	print(f"\nTotal: {check}\n")
+
 def followUnfollowLikeHour(gDict, gp, max_follows, max_likes):
 	i = 0
 	while True:
 		print(f"Ran {i} times:\n")
 		i+=1
 		unfollow_bot(gDict, gp, max_follows)
-		follow_bot(goog, gDict, gp)
+		follow_bot(goog, gDict, gp, max_follows)
 		like_bot(gDict, gp, max_likes)
 		if timeout_input("MAIN LOOP: Press enter to stop: ",3600) != (-1, ''):
 			break
+
+def unfollowHour(gDict, gp, max_follows):
+	i = 0
+	while True:
+		print(f"Ran {i} times:\n")
+		i+=1
+		unfollow_bot(gDict, gp, max_follows)
+		if timeout_input("MAIN LOOP: Press enter to stop: ",3600) != (-1, ''):
+			break
+
+def checkUnfollow(gDict, gp, max_follows):
+	total = 0
+	for key, value in gDict.d.items():
+		if value["date_unfollow"] == "2020-09-13":
+			total +=1
+	cur = 0
+	for key, value in gDict.d.items():
+		if value["date_unfollow"] == "2020-09-13":
+			cur+=1
+			check_unfollowed = ""
+			print(f"\n{cur}/{total}\n{key}: {value}")
+			gp.driver.get(f'https://www.instagram.com{key}')
+			source = gp.driver.page_source
+			if "Sorry, this page isn't available." not in source:
+				try:
+					check_unfollowed = WebDriverWait(gp.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//header//button[text()='Follow']")))
+				except:
+					check_unfollowed = ""
+				if check_unfollowed == "":
+					input("Check insta?: ")
+			else:
+				print("User does not exist.")
+
+# ### Get button elements ####
+# >>> popup = WebDriverWait(driver, 50).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div/div/div[2]')))
+# >>> buttons = popup.find_elements_by_xpath("//button[text()='Following']")
+# better: buttons = popup.find_elements_by_xpath("//li[@class='wo9IH']//button[text()='Following']")
+# ### another
+# links = popup.find_elements_by_xpath("//li[@class='wo9IH']")
+
+
+
+	# print(f"\nTotal refollowed: {refollow}\n")
+# source = gp.driver.page_source
+# if "Sorry, this page isn't available." not in source:
+# 	print("not found")
+# else:
+# 	print("found")
+# check_unfollowed = WebDriverWait(gp.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//header/*/button[text()='Follow']")))
